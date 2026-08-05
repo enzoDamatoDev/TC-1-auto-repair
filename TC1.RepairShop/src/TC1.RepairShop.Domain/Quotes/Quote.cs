@@ -42,8 +42,19 @@ public class Quote
 
     public void Reject()
     {
-        QuoteStatusValue = QuoteStatus.Rejected;
+        if (QuoteStatusValue == QuoteStatus.Approved)
+        {
+            throw new InvalidOperationException("Não é possível rejeitar um orçamento já aprovado.");
+        }
+
+        const int MaxRejections = 3;
+        if (RejectionCount >= MaxRejections)
+        {
+            throw new InvalidOperationException("Limite de recusas do cliente atingido para este orçamento.");
+        }
+
         RejectionCount++;
+        QuoteStatusValue = QuoteStatus.Rejected;
     }
 
     public void Approve()

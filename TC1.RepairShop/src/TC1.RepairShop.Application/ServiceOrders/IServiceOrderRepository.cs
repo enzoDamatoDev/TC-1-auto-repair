@@ -1,6 +1,11 @@
+using TC1.RepairShop.Domain.ServiceOrders;
+
 namespace TC1.RepairShop.Application.ServiceOrders;
 
 public interface IServiceOrderRepository
 {
-    // Implementation lands in the ServiceOrders bounded context prompt.
+    Task AddAsync(ServiceOrder order);
+    Task<ServiceOrder?> GetByIdAsync(Guid id);
+    Task<IEnumerable<ServiceOrder>> ListAsync();
+    Task UpdateAsync(ServiceOrder order);
 }

@@ -37,9 +37,28 @@ public class ServiceOrder
 
     public void AdvanceTo(ServiceOrderStatus newStatus)
     {
+        // Valida transições de estado permitidas
+        var allowed = new List<(ServiceOrderStatus From, ServiceOrderStatus To)>
+        {
+            (ServiceOrderStatus.Received, ServiceOrderStatus.UnderDiagnosis),
+            (ServiceOrderStatus.Received, ServiceOrderStatus.InProgress),
+            (ServiceOrderStatus.UnderDiagnosis, ServiceOrderStatus.AwaitingApproval),
+            (ServiceOrderStatus.UnderDiagnosis, ServiceOrderStatus.InProgress),
+            (ServiceOrderStatus.AwaitingApproval, ServiceOrderStatus.InProgress),
+            (ServiceOrderStatus.InProgress, ServiceOrderStatus.Completed),
+            (ServiceOrderStatus.InProgress, ServiceOrderStatus.Delivered),
+            (ServiceOrderStatus.Completed, ServiceOrderStatus.Delivered),
+        };
+
+        var current = OrderStatusValue;
+        if (!allowed.Contains((current, newStatus)))
+        {
+            throw new InvalidOperationException($"Transição inválida de {current} para {newStatus}");
+        }
+
         OrderStatusValue = newStatus;
 
-        if (newStatus == ServiceOrderStatus.Delivered)
+        if (newStatus == ServiceOrderStatus.Completed || newStatus == ServiceOrderStatus.Delivered)
         {
             CompletedAt = DateTime.UtcNow;
         }
